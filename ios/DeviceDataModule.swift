@@ -10,39 +10,27 @@ public class DeviceDataModule: Module {
     // The module will be accessible from `requireNativeModule('DeviceDataModule')` in JavaScript.
     Name("DeviceDataModule")
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants([
-      "PI": Double.pi
-    ])
-
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      return "Hello world! 👋"
+    // 값을 저장하는 함수
+    Function("setItem") { (key: String, value: String) in
+      getUserDefaults()?.set(value, forKey: key)
     }
 
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { (value: String) in
-      // Send an event to JavaScript.
-      self.sendEvent("onChange", [
-        "value": value
-      ])
+    // 값을 가져오는 함수
+    Function("getItem") { (key: String) -> String? in
+      return getUserDefaults()?.string(forKey: key)
     }
 
-    // Enables the module to be used as a native view. Definition components that are accepted as part of the
-    // view definition: Prop, Events.
-    View(DeviceDataModuleView.self) {
-      // Defines a setter for the `url` prop.
-      Prop("url") { (view: DeviceDataModuleView, url: URL) in
-        if view.webView.url != url {
-          view.webView.load(URLRequest(url: url))
-        }
+    // 값을 삭제하는 함수
+    Function("removeItem") { (key: String) in
+      getUserDefaults()?.removeObject(forKey: key)
       }
+    }
 
-      Events("onLoad")
+    private func getUserDefaults() -> UserDefaults? {
+      if let suiteName = suiteName {
+        return UserDefaults(suiteName: suiteName)
+      }
+      return UserDefaults.standard
     }
   }
 }

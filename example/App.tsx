@@ -1,73 +1,116 @@
-import { useEvent } from 'expo';
-import DeviceDataModule, { DeviceDataModuleView } from 'device-data-module';
-import { Button, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { useState } from "react";
+import DeviceDataModule from "device-data-module";
+import {
+  Button,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+} from "react-native";
 
 export default function App() {
-  const onChangePayload = useEvent(DeviceDataModule, 'onChange');
+  const [key, setKey] = useState("");
+  const [value, setValue] = useState("");
+  const [storedValue, setStoredValue] = useState<string | null>(null);
+
+  const handleSetItem = async () => {
+    if (key && value) {
+      await DeviceDataModule.setItem(key, value);
+      alert(`${key} 저장 완료!`);
+    }
+  };
+
+  const handleGetItem = async () => {
+    if (!key) return;
+    const result = await DeviceDataModule.getItem(key);
+    setStoredValue(result || "값이 존재하지 않습니다");
+  };
+
+  const handleRemoveItem = async () => {
+    if (!key) return;
+    await DeviceDataModule.removeItem(key);
+    setStoredValue(null);
+    alert(`${key} 삭제 완료!`);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.container}>
-        <Text style={styles.header}>Module API Example</Text>
-        <Group name="Constants">
-          <Text>{DeviceDataModule.PI}</Text>
-        </Group>
-        <Group name="Functions">
-          <Text>{DeviceDataModule.hello()}</Text>
-        </Group>
-        <Group name="Async functions">
-          <Button
-            title="Set value"
-            onPress={async () => {
-              await DeviceDataModule.setValueAsync('Hello from JS!');
-            }}
+      <ScrollView style={styles.scrollContainer}>
+        <Text style={styles.header}>Device Data Storage Example</Text>
+
+        <View style={styles.inputGroup}>
+          <TextInput
+            style={styles.input}
+            placeholder="Key"
+            value={key}
+            onChangeText={setKey}
           />
-        </Group>
-        <Group name="Events">
-          <Text>{onChangePayload?.value}</Text>
-        </Group>
-        <Group name="Views">
-          <DeviceDataModuleView
-            url="https://www.example.com"
-            onLoad={({ nativeEvent: { url } }) => console.log(`Loaded: ${url}`)}
-            style={styles.view}
+          <TextInput
+            style={styles.input}
+            placeholder="Value"
+            value={value}
+            onChangeText={setValue}
           />
-        </Group>
+        </View>
+
+        <View style={styles.buttonGroup}>
+          <Button title="Set Item" onPress={handleSetItem} />
+          <Button title="Get Item" onPress={handleGetItem} />
+          <Button title="Remove Item" onPress={handleRemoveItem} />
+        </View>
+
+        {storedValue && (
+          <View style={styles.resultContainer}>
+            <Text style={styles.resultText}>
+              {key}: {storedValue}
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-function Group(props: { name: string; children: React.ReactNode }) {
-  return (
-    <View style={styles.group}>
-      <Text style={styles.groupHeader}>{props.name}</Text>
-      {props.children}
-    </View>
-  );
-}
-
-const styles = {
-  header: {
-    fontSize: 30,
-    margin: 20,
-  },
-  groupHeader: {
-    fontSize: 20,
-    marginBottom: 20,
-  },
-  group: {
-    margin: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-  },
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#eee',
+    backgroundColor: "#f5f5f5",
   },
-  view: {
-    flex: 1,
-    height: 200,
+  scrollContainer: {
+    padding: 20,
   },
-};
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 30,
+    textAlign: "center",
+  },
+  inputGroup: {
+    gap: 10,
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: "white",
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  buttonGroup: {
+    gap: 10,
+    marginBottom: 20,
+  },
+  resultContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  resultText: {
+    fontSize: 16,
+    color: "#333",
+  },
+});
