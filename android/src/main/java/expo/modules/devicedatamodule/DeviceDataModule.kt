@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.net.URL
 
 class DeviceDataModule : Module() {
   // Each module class must implement the definition function. The definition consists of components
@@ -30,13 +29,13 @@ class DeviceDataModule : Module() {
     Function("removeItem") { key: String ->
       getPreferences().edit().remove(key).apply()
     }
+  }
 
-    private val context: Context
-    get() = requireNotNull(appContext.reactContext)
+  private val context: Context
+  get() = requireNotNull(appContext.reactContext)
 
-    private fun getPreferences(): SharedPreferences {
-      // 기존 네이티브 앱에서 사용하던 SharedPreferences 파일을 이름으로 직접 접근합니다.
-      return context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
-    }
+  private fun getPreferences(): SharedPreferences {
+    // 기존 네이티브 앱에서 사용하던 SharedPreferences 파일을 이름으로 직접 접근합니다.
+    return context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
   }
 }
