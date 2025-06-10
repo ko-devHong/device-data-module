@@ -27,9 +27,6 @@ public class DeviceDataModule: Module {
   }
 
   private func getUserDefaults() -> UserDefaults? {
-    if let suiteName = suiteName {
-      return UserDefaults(suiteName: suiteName)
-    }
     return UserDefaults.standard
   }
 }
