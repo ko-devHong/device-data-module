@@ -1,5 +1,7 @@
 package expo.modules.devicedatamodule
 
+import android.content.Context
+import android.content.SharedPreferences
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.net.URL
