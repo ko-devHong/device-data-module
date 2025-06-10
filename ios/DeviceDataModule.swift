@@ -24,13 +24,13 @@ public class DeviceDataModule: Module {
     Function("removeItem") { (key: String) in
       getUserDefaults()?.removeObject(forKey: key)
       }
-    }
+  }
 
-    private func getUserDefaults() -> UserDefaults? {
-      if let suiteName = suiteName {
-        return UserDefaults(suiteName: suiteName)
-      }
-      return UserDefaults.standard
+  private func getUserDefaults() -> UserDefaults? {
+    if let suiteName = suiteName {
+      return UserDefaults(suiteName: suiteName)
     }
+    return UserDefaults.standard
   }
 }
+
