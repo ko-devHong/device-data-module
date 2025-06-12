@@ -1,31 +1,35 @@
 # Device Data Module
 
 [![npm version](https://img.shields.io/npm/v/device-data-module.svg)](https://www.npmjs.com/package/device-data-module)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## 설명
 
-`device-data-module`은 React Native 애플리케이션이 Android의 네이티브 `SharedPreferences`에 접근할 수 있도록 설계된 모듈입니다. 기존 네이티브 앱에서 사용하던 데이터를 Expo 모듈에서 읽거나 써야 할 때 유용하며, 점진적인 앱 마이그레이션 시 데이터 공유를 원활하게 해줍니다.
+`DeviceDataModule`은 React Native 애플리케이션이 네이티브 데이터 저장소에 접근할 수 있도록 설계된 모듈입니다. Android에서는 `SharedPreferences`를, iOS에서는 `UserDefaults`를 사용하여 데이터를 관리합니다. 기존 네이티브 앱에서 사용하던 데이터를 Expo 모듈에서 읽거나 써야 할 때 유용하며, 점진적인 앱 마이그레이션 시 데이터 공유를 원활하게 해줍니다.
 
-주요 기능은 네이티브 `SharedPreferences` 파일에 직접 접근하여 키-값 데이터를 저장, 조회, 삭제하는 것입니다.
+주요 기능은 각 플랫폼의 네이티브 저장소에 직접 접근하여 키-값 데이터를 저장, 조회, 삭제하는 것입니다.
 
 ---
 
 ## 설치
 
 ```bash
-npm install device-data-module
+pnpm install device-data-module
 ```
 또는
 ```bash
 yarn add device-data-module
+```
+또는
+```bash
+npx expo install device-data-module
 ```
 
 ---
 
 ## 사용법
 
-아래 예제는 `device-data-module`을 사용하여 데이터를 저장, 조회, 삭제하는 방법을 보여줍니다.
+아래 예제는 `DeviceDataModule`을 사용하여 데이터를 저장, 조회, 삭제하는 방법을 보여줍니다.
 
 ```tsx
 import { useState } from 'react';
@@ -37,7 +41,7 @@ export default function App() {
   const [value, setValue] = useState('');
   const [storedValue, setStoredValue] = useState<string | null>(null);
 
-  // 주어진 키로 값을 저장합니다.
+  // 주어진 키로 값을 저장합니다. (Android: SharedPreferences, iOS: UserDefaults)
   const handleSetItem = async () => {
     if (key && value) {
       await DeviceDataModule.setItem(key, value);
@@ -45,14 +49,14 @@ export default function App() {
     }
   };
 
-  // 주어진 키의 값을 가져옵니다.
+  // 주어진 키의 값을 가져옵니다. (Android: SharedPreferences, iOS: UserDefaults)
   const handleGetItem = async () => {
     if (!key) return;
     const result = await DeviceDataModule.getItem(key);
     setStoredValue(result || '값이 존재하지 않습니다');
   };
 
-  // 주어진 키의 항목을 삭제합니다.
+  // 주어진 키의 항목을 삭제합니다. (Android: SharedPreferences, iOS: UserDefaults)
   const handleRemoveItem = async () => {
     if (!key) return;
     await DeviceDataModule.removeItem(key);
@@ -115,14 +119,20 @@ const styles = StyleSheet.create({
 지정된 키(key)에 문자열 값(value)을 저장합니다.
 - `key`: 저장할 데이터의 키입니다.
 - `value`: 저장할 데이터의 값입니다.
+- **Android**: `SharedPreferences`에 저장됩니다.
+- **iOS**: `UserDefaults`에 저장됩니다.
 
 ### `getItem(key: string): Promise<string | null>`
 지정된 키(key)에 해당하는 값을 가져옵니다. 값이 없으면 `null`을 반환합니다.
 - `key`: 가져올 데이터의 키입니다.
+- **Android**: `SharedPreferences`에서 조회합니다.
+- **iOS**: `UserDefaults`에서 조회합니다.
 
 ### `removeItem(key: string): Promise<void>`
 지정된 키(key)에 해당하는 값을 삭제합니다.
 - `key`: 삭제할 데이터의 키입니다.
+- **Android**: `SharedPreferences`에서 삭제합니다.
+- **iOS**: `UserDefaults`에서 삭제합니다.
 
 
 ---
